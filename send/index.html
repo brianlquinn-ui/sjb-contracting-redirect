@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Text a Review Request</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="apple-mobile-web-app-title" content="SJB Review">
+<link rel="icon" type="image/png" href="/assets/sjb-icon-192.png">
+<link rel="apple-touch-icon" href="/assets/sjb-icon-192.png">
+<style>
+:root{--harbor:#0E5A80;--steel:#1678A9;--ink:#22272B;--muted:#4F585E;--mist:#F4F6F7;--rule:#DCE1E4;color-scheme:light}
+*{box-sizing:border-box}
+body{margin:0;background:#fff;color:var(--ink);font:18px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-text-size-adjust:100%}
+main{max-width:520px;margin:0 auto;padding:20px 16px 40px}
+header{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+header img{width:44px;height:44px}
+h1{font-size:22px;margin:0}
+label{display:block;font-weight:600;margin:16px 0 6px}
+.hint{font-weight:400;color:var(--muted);font-size:15px}
+input,textarea{width:100%;font:inherit;font-size:18px;padding:12px;border:1px solid var(--rule);border-radius:10px;background:#fff;color:var(--ink)}
+input:focus,textarea:focus{outline:2px solid var(--steel);border-color:var(--steel)}
+textarea{min-height:170px;resize:none;overflow:hidden}
+.btn{display:block;width:100%;margin-top:18px;padding:18px 16px;border:0;border-radius:12px;background:var(--harbor);color:#fff;font:inherit;font-size:21px;font-weight:700;text-align:center;text-decoration:none;cursor:pointer}
+.btn:active{background:var(--steel)}
+.btn2{display:block;width:100%;margin-top:10px;padding:14px 16px;border:2px solid var(--harbor);border-radius:12px;background:#fff;color:var(--harbor);font:inherit;font-weight:700;cursor:pointer}
+.row{display:flex;gap:10px}
+.row .btn2{flex:1}
+.tips{margin-top:28px;padding:16px;background:var(--mist);border-radius:12px;font-size:16px;color:var(--muted)}
+.tips p{margin:0 0 8px}
+.tips p:last-child{margin:0}
+.me{margin-top:24px;font-size:15px;color:var(--muted)}
+.me input{font-size:16px;padding:8px 10px;width:160px;display:inline-block;margin-left:6px}
+</style>
+</head>
+<body>
+<main>
+<header>
+<img src="/assets/sjb-icon-192.png" alt="">
+<h1>Text a review request</h1>
+</header>
+
+<label for="name">Client first name</label>
+<input id="name" type="text" autocomplete="off" autocapitalize="words" placeholder="Margaret">
+
+<label for="job">What we worked on <span class="hint">(optional)</span></label>
+<input id="job" type="text" autocomplete="off" placeholder="your kitchen">
+
+<label for="phone">Cell number <span class="hint">(optional, or pick them in Messages)</span></label>
+<input id="phone" type="tel" inputmode="tel" autocomplete="off" placeholder="910-555-1234">
+
+<label for="msg">Message <span class="hint">(edit if you want)</span></label>
+<textarea id="msg"></textarea>
+
+<a id="send" class="btn" href="sms:">Open text message</a>
+<div class="row">
+<button id="copy" class="btn2" type="button">Copy message</button>
+<button id="clear" class="btn2" type="button">Next client</button>
+</div>
+
+<div class="tips">
+<p>Send it the day the job wraps, while they are happy with the work.</p>
+<p>Ask every finished client, not just the ones you expect five stars from. That is Google's rule.</p>
+<p>No family, crew, or anyone at SJB. No gifts or discounts for reviews.</p>
+</div>
+
+<p class="me">Texts are signed as <input id="me" type="text" autocomplete="off" autocapitalize="words"></p>
+</main>
+
+<script>
+(function () {
+  var LINK = "https://sjb-contracting.com/review";
+  var ios = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  var el = function (id) { return document.getElementById(id); };
+  var name = el("name"), job = el("job"), phone = el("phone"), msg = el("msg"), me = el("me"), send = el("send");
+
+  try { me.value = localStorage.getItem("sjb-review-me") || "Brian"; } catch (e) { me.value = "Brian"; }
+
+  function build() {
+    var n = name.value.trim() || "there";
+    var j = job.value.trim().replace(/[.!\s]+$/, "") || "your home";
+    var m = me.value.trim() || "Brian";
+    msg.value = "Hey " + n + ", it's " + m + " with SJB Contracting. Thank you so much for trusting us with " + j +
+      "! We truly enjoyed working with you.\n\nIf you ever have a minute, we'd love to hear how we did. A short review would mean a lot to all of us:\n" +
+      LINK + "\n\nThanks again, and call us anytime you need anything!";
+    link();
+  }
+
+  function number() {
+    var d = phone.value.replace(/\D/g, "");
+    if (d.length === 10) return "+1" + d;
+    if (d.length === 11 && d.charAt(0) === "1") return "+" + d;
+    return d;
+  }
+
+  function fit() {
+    msg.style.height = "auto";
+    msg.style.height = (msg.scrollHeight + 2) + "px";
+  }
+
+  function link() {
+    fit();
+    send.href = "sms:" + number() + (ios ? "&" : "?") + "body=" + encodeURIComponent(msg.value);
+  }
+
+  name.addEventListener("input", build);
+  job.addEventListener("input", build);
+  me.addEventListener("input", function () {
+    try { localStorage.setItem("sjb-review-me", me.value.trim()); } catch (e) {}
+    build();
+  });
+  phone.addEventListener("input", link);
+  msg.addEventListener("input", link);
+
+  el("copy").addEventListener("click", function () {
+    var b = this;
+    function done() { b.textContent = "Copied"; setTimeout(function () { b.textContent = "Copy message"; }, 1500); }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(msg.value).then(done, function () { msg.select(); document.execCommand("copy"); done(); });
+    } else {
+      msg.select(); document.execCommand("copy"); done();
+    }
+  });
+
+  el("clear").addEventListener("click", function () {
+    name.value = ""; job.value = ""; phone.value = "";
+    build();
+    name.focus();
+  });
+
+  build();
+})();
+</script>
+</body>
+</html>
