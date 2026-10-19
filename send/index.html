@@ -20,7 +20,7 @@ label{display:block;font-weight:600;margin:16px 0 6px}
 .hint{font-weight:400;color:var(--muted);font-size:15px}
 input,textarea{width:100%;font:inherit;font-size:18px;padding:12px;border:1px solid var(--rule);border-radius:10px;background:#fff;color:var(--ink)}
 input:focus,textarea:focus{outline:2px solid var(--steel);border-color:var(--steel)}
-textarea{min-height:240px;resize:vertical}
+textarea{min-height:170px;resize:none;overflow:hidden}
 .btn{display:block;width:100%;margin-top:18px;padding:18px 16px;border:0;border-radius:12px;background:var(--harbor);color:#fff;font:inherit;font-size:21px;font-weight:700;text-align:center;text-decoration:none;cursor:pointer}
 .btn:active{background:var(--steel)}
 .btn2{display:block;width:100%;margin-top:10px;padding:14px 16px;border:2px solid var(--harbor);border-radius:12px;background:#fff;color:var(--harbor);font:inherit;font-weight:700;cursor:pointer}
@@ -43,8 +43,8 @@ textarea{min-height:240px;resize:vertical}
 <label for="name">Client first name</label>
 <input id="name" type="text" autocomplete="off" autocapitalize="words" placeholder="Margaret">
 
-<label for="job">What we did <span class="hint">(optional)</span></label>
-<input id="job" type="text" autocomplete="off" placeholder="redo your kitchen">
+<label for="job">What we worked on <span class="hint">(optional)</span></label>
+<input id="job" type="text" autocomplete="off" placeholder="your kitchen">
 
 <label for="phone">Cell number <span class="hint">(optional, or pick them in Messages)</span></label>
 <input id="phone" type="tel" inputmode="tel" autocomplete="off" placeholder="910-555-1234">
@@ -78,10 +78,11 @@ textarea{min-height:240px;resize:vertical}
 
   function build() {
     var n = name.value.trim() || "there";
-    var j = job.value.trim().replace(/[.!\s]+$/, "") || "work with you";
+    var j = job.value.trim().replace(/[.!\s]+$/, "") || "your home";
     var m = me.value.trim() || "Brian";
-    msg.value = "Hey " + n + ", it's " + m + " with SJB Contracting. We really appreciate the opportunity to " + j +
-      ". If you have a minute, a quick Google review would mean a lot. Just tap here:\n" + LINK;
+    msg.value = "Hey " + n + ", it's " + m + " with SJB Contracting. Thank you so much for trusting us with " + j +
+      "! We truly enjoyed working with you.\n\nIf you ever have a minute, we'd love to hear how we did. A short review would mean a lot to all of us:\n" +
+      LINK + "\n\nThanks again, and call us anytime you need anything!";
     link();
   }
 
@@ -92,7 +93,13 @@ textarea{min-height:240px;resize:vertical}
     return d;
   }
 
+  function fit() {
+    msg.style.height = "auto";
+    msg.style.height = (msg.scrollHeight + 2) + "px";
+  }
+
   function link() {
+    fit();
     send.href = "sms:" + number() + (ios ? "&" : "?") + "body=" + encodeURIComponent(msg.value);
   }
 
