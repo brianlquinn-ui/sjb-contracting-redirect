@@ -76,6 +76,13 @@ textarea{min-height:170px;resize:none;overflow:hidden}
 
   try { me.value = localStorage.getItem("sjb-review-me") || "Brian"; } catch (e) { me.value = "Brian"; }
 
+  // Pre-fill: /send#n=Margaret&j=your+kitchen&p=9105551234 (hash stays off the server; ?n= also works)
+  var q = new URLSearchParams(location.hash.slice(1) || location.search.slice(1));
+  name.value = q.get("n") || "";
+  job.value = q.get("j") || "";
+  phone.value = q.get("p") || "";
+  if (location.hash || location.search) history.replaceState(null, "", location.pathname);
+
   function build() {
     var n = name.value.trim() || "there";
     var j = job.value.trim().replace(/[.!\s]+$/, "") || "your home";
